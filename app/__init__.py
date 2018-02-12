@@ -5,13 +5,14 @@ This defines the application module that essentially creates a new flask app obj
 import logging
 import os
 from datetime import datetime
-
+from flask_bcrypt import Bcrypt
 import jinja2
 from flask import Flask, g
 from flask_login import LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from config import config
+from flask_restful import Api
 
 # initialize objects of flask extensions that will be used and then initialize the application
 # once the flask object has been created and initialized. 1 caveat for this is that when
@@ -22,10 +23,11 @@ login_manager.session_protection = "strong"
 login_manager.login_view = "auth.login"
 
 mail = Mail()
-app_logger = logging.getLogger("BucketListApiLogger")
+app_logger = logging.getLogger("ShutterBugApiLogger")
+bcrypt = Bcrypt()
+api = Api()
 
-
-class BucketListApp(Flask):
+class ShutterBugApp(Flask):
     """
     Custom application class subclassing Flask application. This is to ensure more modularity in
      terms of static files and templates. This way a module will have its own templates and the
@@ -68,7 +70,7 @@ def create_app(config_name):
     :return: a new WSGI Flask app
     :rtype: Flask
     """
-    app = BucketListApp()
+    app = ShutterBugApp()
 
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
@@ -76,6 +78,8 @@ def create_app(config_name):
     # initialize the db and login manager
     db.init_app(app)
     login_manager.init_app(app)
+    bcrypt.init_app(app)
+    api.init_app(app)
 
     error_handlers(app)
     register_app_blueprints(app)

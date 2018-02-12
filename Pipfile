@@ -12,6 +12,7 @@ codecov = "==2.0.9"
 coverage = "==4.4.1"
 pytest = "==3.2.3"
 
+
 [packages]
 
 alembic = "==0.9.5"
@@ -44,6 +45,7 @@ sqlalchemy = "==1.1.14"
 "urllib3" = "==1.22"
 werkzeug = "==0.12.2"
 flask-bcrypt = "*"
+flask-restful = "*"
 
 
 [requires]
