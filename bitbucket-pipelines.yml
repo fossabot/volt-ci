@@ -1,0 +1,11 @@
+# Only use spaces to indent your .yml configuration.
+image: python:3.6.1
+
+pipelines:
+  default:
+    - step:
+        caches:
+          - pip
+        script:
+          - pip install -r requirements.txt
+          - python manage.py test
