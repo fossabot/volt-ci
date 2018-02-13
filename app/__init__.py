@@ -12,7 +12,6 @@ from flask_login import LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from config import config
-from flask_restful import Api
 
 # initialize objects of flask extensions that will be used and then initialize the application
 # once the flask object has been created and initialized. 1 caveat for this is that when
@@ -25,7 +24,7 @@ login_manager.login_view = "auth.login"
 mail = Mail()
 app_logger = logging.getLogger("ShutterBugApiLogger")
 bcrypt = Bcrypt()
-api = Api()
+
 
 class ShutterBugApp(Flask):
     """
@@ -79,15 +78,14 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     bcrypt.init_app(app)
-    api.init_app(app)
-
-    error_handlers(app)
-    register_app_blueprints(app)
-    app_request_handlers(app, db)
-    app_logger_handler(app, config_name)
 
     # initialize mail
     mail.init_app(app)
+
+    error_handlers(app)
+    app_request_handlers(app, db)
+    app_logger_handler(app, config_name)
+    register_app_blueprints(app)
 
     # this will reduce the load time for templates and increase the application performance
     app.jinja_env.cache = {}
@@ -101,6 +99,7 @@ def app_request_handlers(app, db_):
     This will include before and after requests which could be used to update a user's status or the 
     database that is currently in use
     :param app: the current flask app
+    :param db_: database instance
     """
 
     @app.before_request
@@ -123,6 +122,7 @@ def app_logger_handler(app, config_name):
     Will handle error logging for the application and will store the app log files in a file that can 
     later be accessed.
     :param app: current flask application
+    :param config_name: Configuration to use
     """
     from logging.handlers import SMTPHandler, RotatingFileHandler
     mail_server = app.config.get("MAIL_SERVER")
@@ -201,5 +201,8 @@ def register_app_blueprints(app_):
     :param app_: the current flask app
     """
     from app.mod_auth import auth
+    from app.mod_photos import photos
 
     app_.register_blueprint(auth)
+    app_.register_blueprint(photos)
+
