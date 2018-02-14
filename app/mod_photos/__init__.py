@@ -2,13 +2,13 @@ from flask import Blueprint
 from flask_restful import Api
 from .resources.photo_resource import PhotoListResource, PhotoSingleResource
 
-photos = Blueprint(name="photos", import_name=__name__, url_prefix="/photos", static_folder="static",
+photos = Blueprint(name="photos", import_name=__name__, url_prefix="/api/photos", static_folder="static",
                    template_folder="templates")
 api = Api(photos)
 
 routes = [
-    "/api/photos",
-    "/api/photos/<int:photo_id>"
+    "/",
+    "/<int:photo_id>"
 ]
 
 api.add_resource(PhotoSingleResource, routes[0])
