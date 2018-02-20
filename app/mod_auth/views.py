@@ -51,7 +51,7 @@ def register():
     :return: JSON response with more instructions on how to use the API and status code
     """
     if request.method == "GET":
-        return jsonify({"message": "Welcome to BucketList Service",
+        return jsonify({"message": "Welcome to ShutterBug Service",
                         "more": "To register make a POST with username and password to /auth/register/"}), 200
     else:
         username = request.values.get("username")
