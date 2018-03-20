@@ -10,7 +10,7 @@ DB_LOCATION = "/tmp/test_shutterbug.db"
 
 @pytest.fixture(scope="session")
 def app():
-    app = create_app("develop")
+    app = create_app("testing")
     return app
 
 
