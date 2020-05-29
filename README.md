@@ -18,4 +18,6 @@ This uses bash scripts for some of the tasks, so ensure you are running in an en
 
 Have git installed & on your PATH as the _repo-observer_  will be watching on changes on a sample git repository and will use git commands to run the CI system
 
+## The Architecture
 
+![architecture](./images/architecture.png)
