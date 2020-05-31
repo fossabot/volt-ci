@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+loguru = "*"
+python-dotenv = "*"
 
 [dev-packages]
 black = "*"
