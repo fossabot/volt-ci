@@ -17,9 +17,9 @@ import subprocess
 import sys
 import time
 
-from utils import communicate
-from exceptions import RepoObserverError
-from logger import logger
+from .exceptions import RepoObserverError
+from ..utils import communicate
+from ci.logger import logger
 
 
 def poll():

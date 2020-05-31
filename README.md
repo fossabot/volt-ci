@@ -22,7 +22,7 @@ Have git installed & on your PATH as the _repo-observer_  will be watching on ch
 
 ![architecture](./images/architecture.png)
 
-### Repo Observer(repo_observer.py)
+### Repo Observer(observer.py)
 
 The repository observer monitors a repository and notifies the dispatcher when a new commit is seen. In order to work with all version control systems (since not all VCSs have built-in notification systems), this repository observer is written to periodically check the repository for new commits instead of relying on the VCS to notify it that changes have been made. This poll is done every 5 seconds by default, this can be adjusted in the CLI arguments.
 
