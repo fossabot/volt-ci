@@ -13,71 +13,59 @@ from loguru import logger
 # info log configurations
 logger.add(
     sink=sys.stdout,
-    backtrace=True
-    if os.environ.get("ENV", "development") == "development"
-    else False,
+    backtrace=True if os.environ.get("ENV", "development") == "development" else False,
     colorize=True,
     format="<green>{time}</green> <level>{message}</level>",
     enqueue=True,
-    level="INFO"
+    level="INFO",
 )
 
 # error logs
 logger.add(
     sink=sys.stderr,
-    backtrace=True
-    if os.environ.get("ENV", "development") == "development"
-    else False,
+    backtrace=True if os.environ.get("ENV", "development") == "development" else False,
     colorize=True,
     format="<green>{time}</green> <level>{message}</level>",
     enqueue=True,
-    level="ERROR"
+    level="ERROR",
 )
 
 # debug logs
 logger.add(
     sink=sys.stdout,
-    backtrace=True
-    if os.environ.get("ENV", "development") == "development"
-    else False,
+    backtrace=True if os.environ.get("ENV", "development") == "development" else False,
     colorize=True,
     format="<green>{time}</green> <level>{message}</level>",
     enqueue=True,
-    level="DEBUG"
+    level="DEBUG",
 )
 
 # warning logs
 logger.add(
     sink=sys.stdout,
-    backtrace=True
-    if os.environ.get("ENV", "development") == "development"
-    else False,
+    backtrace=True if os.environ.get("ENV", "development") == "development" else False,
     colorize=True,
     format="<green>{time}</green> <level>{message}</level>",
     enqueue=True,
-    level="WARNING"
+    level="WARNING",
 )
 
 # critical logs
 logger.add(
     sink=sys.stderr,
-    backtrace=True
-    if os.environ.get("ENV", "development") == "development"
-    else False,
+    backtrace=True if os.environ.get("ENV", "development") == "development" else False,
     colorize=True,
     format="<green>{time}</green> <level>{message}</level>",
     enqueue=True,
-    level="CRITICAL"
+    level="CRITICAL",
 )
 
 # trace logs
 logger.add(
     sink=sys.stderr,
-    backtrace=True
-    if os.environ.get("ENV", "development") == "development"
-    else False,
+    backtrace=True if os.environ.get("ENV", "development") == "development" else False,
     colorize=True,
     format="<green>{time}</green> <level>{message}</level>",
     enqueue=True,
-    level="TRACE"
+    level="TRACE",
 )
