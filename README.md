@@ -77,3 +77,30 @@ optional arguments:
 ```
 
 > This will outline all the available arguments to pass to the CLI
+
+### Dispatcher Server (dispather.py)
+
+Dispatcher Server is used to distribute commit to test runners and communicate back test results once test runners
+complete running given tests against the given commit. It contains a list of runners & a key value pair of dispatched commits
+as well as pending commits.
+
+It uses a custom TCP Server from socket server builtin library which allows spawning of new threads to handle multiple connections. Since the default TCP connection does not allow for handling multple requests, this allows the Dispatcher Server
+to spin up new threads whenever a new connection request comes in from either the repository observer or from any of the test runners.
+
+It handles several commands, most are listed in the dispatch_handler.py source code, but in summary here they are:
+
+1. _status_
+
+    This is used to check the status of the dispatcher server
+
+2. _register_
+
+    This is used to register any new test runner. Test runners register themselves with the Dispatch server.
+
+3. _dispatch_
+
+    This is used to dispatch any new commit_ids to the test runners as recevied from the repo observer
+
+4. _results_
+
+    This is used by test runners to communicate results of running tests against the given commit_id
