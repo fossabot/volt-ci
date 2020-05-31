@@ -5,6 +5,7 @@ Will contain common utility or helper functions that will be re-useable and used
 """
 from socket import socket
 
+
 def communicate(host, port, request):
     """
     Handles communication with remote sockets providing the host port & request 
