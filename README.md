@@ -51,4 +51,29 @@ git commit -m 'add tests'
 
 The observer will use this clone to detect changes. To allow the repository observer to use this clone, we pass it the path when we invoke the repo_observer.py file. The repository observer will use this clone to pull from the main repository.
 
-We must also give the observer the dispatcher's address, so the observer may send it messages. When you start the repository observer, you can pass in the dispatcher's server address using the `--dispatcher-server` command line argument. If you do not pass it in, it will assume the default address of `localhost:8888`
+We must also give the observer the dispatcher's address, so the observer may send it messages. When you start the repository observer, you can pass in the dispatcher's server address using the `--dispatcher-server` command line argument. If you do not pass it in, it will assume the default address of `localhost:8000`
+
+So, you can run the repo observer with:
+
+```bash
+python repo_observer.py --repo $TEST_REPO --poll 5 --dispatcher-server localhost:8000
+```
+
+> Where $TEST_REPO is an env variable with a full path to the repository
+
+If you want to know the arguments that can be passed to the observer:
+
+```bash
+$ python repo_observer.py -h
+usage: repo_observer.py [-h] [--dispatcher-server DISPATCHER_SERVER] [--repo REPO] [--poll POLL] [--branch BRANCH]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --dispatcher-server DISPATCHER_SERVER
+                        dispatcher host:port , by default it uses localhost:8000
+  --repo REPO           path to the repository to observe
+  --poll POLL           how long to keep polling repository
+  --branch BRANCH       which branch to run tests against
+```
+
+> This will outline all the available arguments to pass to the CLI
