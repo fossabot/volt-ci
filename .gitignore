@@ -165,3 +165,4 @@ fabric.properties
 pyvenv.cfg
 pip-selfcheck.json
 .vscode
+.envrc
