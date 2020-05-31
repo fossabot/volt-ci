@@ -28,11 +28,12 @@ def poll():
     new commit that is made & make a dispatch to the dispatch server to initiate running of new tests.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dispatcher-server", help="dispatcher host:port , by default it uses localhost:8888",
-                        default="localhost:8888", 
+    parser.add_argument("--dispatcher-server", help="dispatcher host:port , by default it uses localhost:8000",
+                        default="localhost:8000", 
                         action="store")
-    parser.add_argument("repo", metavar="REPO", type="str", help="path to the repository to observe")
-    parser.add_argument("poll", help="poll <TIME_IN_SECONDS> , how long to poll repository", default=5, type=int)
+    parser.add_argument("--repo", metavar="REPO", type=str, help="path to the repository to observe")
+    parser.add_argument("--poll", help="how long to keep polling repository", default=5, type=int)
+    parser.add_argument("--branch", help="which branch to run tests against", default="master", type=str)
 
     args = parser.parse_args()
     dispatcher_host, dispatcher_port = args.dispatcher_server.split(":")
@@ -42,8 +43,10 @@ def poll():
             # call the bash script that will update the repo and check
             # for changes. If there's a change, it will drop a .commit_id file
             # with the latest commit in the current working directory
-            subprocess.check_output(["./scripts/update_repo.sh", args.repo])
+            logger.info(f"cloning repo {args.repo}")
+            subprocess.check_output(["./scripts/update_repo.sh", args.repo, args.branch])
         except subprocess.CalledProcessError as e:
+            logger.error(f"Failed to update & check repo {args.repo}, err: {e.output}")
             raise RepoObserverError(f"Could not update & check repository. Err: {e.output}")
 
         if os.path.isfile("files/.commit_id"):
@@ -53,6 +56,7 @@ def poll():
             try:
                 response = communicate(dispatcher_host, int(dispatcher_port), "status")
             except socket.error as e:
+                logger.error(f"Dispather Server Contact error. Is Dispatcher running? err: {e}")
                 raise RepoObserverError(f"Could not contact dispatcher {e}")
             
             if response == "OK":
@@ -65,8 +69,9 @@ def poll():
                 response = communicate(dispatcher_host, int(dispatcher_port), f"dispatch:{commit}")
 
                 if response != "OK":
+                    logger.error(f"Failed to dispatch test to dispatcher. Is Dispatcher OK? err: {response}")
                     raise RepoObserverError(f"Could not dispatch test: {response}")
-                logger.info("Dispatched!")
+                logger.info(f"Dispatched tests for {args.repo}!")
             else:
                 # Dispatcher has an issue
                 raise RepoObserverError(f"Could not dispatch test {response}")

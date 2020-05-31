@@ -19,7 +19,7 @@ fi
 COMMIT_ID=`echo $COMMIT | awk '{ print $2 }'`
 
 # update the repo
-run_or_fail "Could not pull from repository" git pull
+run_or_fail "Could not pull from repository" git pull origin $2
 
 # get the most recent commit
 COMMIT=$(run_or_fail "Could not call 'git log' on repository" git log -n1)
@@ -27,6 +27,7 @@ if [ $? != 0 ]; then
   echo "Could not call 'git log' on repository"
   exit 1
 fi
+
 # get its id
 NEW_COMMIT_ID=`echo $COMMIT | awk '{ print $2 }'`
 
