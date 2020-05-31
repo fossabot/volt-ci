@@ -32,6 +32,7 @@ def poll():
                         default="localhost:8888", 
                         action="store")
     parser.add_argument("repo", metavar="REPO", type="str", help="path to the repository to observe")
+    parser.add_argument("poll", help="poll <TIME_IN_SECONDS> , how long to poll repository", default=5, type=int)
 
     args = parser.parse_args()
     dispatcher_host, dispatcher_port = args.dispatcher_server.split(":")
@@ -70,7 +71,7 @@ def poll():
                 # Dispatcher has an issue
                 raise RepoObserverError(f"Could not dispatch test {response}")
         
-        time.sleep(5)
+        time.sleep(args.poll)
 
 if __name__ == "__main__":
     poll()
