@@ -22,7 +22,7 @@ Have git installed & on your PATH as the _repo-observer_  will be watching on ch
 
 ![architecture](./images/architecture.png)
 
-### Repo Observer(observer.py)
+### Repo Observer(observer)
 
 The repository observer monitors a repository and notifies the dispatcher when a new commit is seen. In order to work with all version control systems (since not all VCSs have built-in notification systems), this repository observer is written to periodically check the repository for new commits instead of relying on the VCS to notify it that changes have been made. This poll is done every 5 seconds by default, this can be adjusted in the CLI arguments.
 
@@ -78,7 +78,7 @@ optional arguments:
 
 > This will outline all the available arguments to pass to the CLI
 
-### Dispatcher Server (dispather.py)
+### Dispatcher Server (dispather)
 
 Dispatcher Server is used to distribute commit to test runners and communicate back test results once test runners
 complete running given tests against the given commit. It contains a list of runners & a key value pair of dispatched commits
@@ -104,3 +104,10 @@ It handles several commands, most are listed in the dispatch_handler.py source c
 4. _results_
 
     This is used by test runners to communicate results of running tests against the given commit_id
+
+### Test Runner
+
+This component actually runs the tests as discovered in a repository. It will receive commands from dispatcher server
+with a commit id and will begin running tests for that repository. This will communicate with dispatcher server every 5 seconds to check if it is still alive. If the response from dispatcher server is not OK, the test runner server will terminate & shutdown to conserve resources as it will not have anywhere to report test results nor receive commands to run.
+
+The implementation for a TCP server is similar to the Dispatcher server with new connection requests being handled on a separate thread.
