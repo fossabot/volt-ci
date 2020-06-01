@@ -1,6 +1,6 @@
 import argparse
 
-from ci.repo_observer.observer import observer
+from ci.repo_observer import observer
 
 
 def run_observer():

@@ -1,5 +1,5 @@
 import argparse
-from ci.dispatcher.dispatcher import dispatcher
+from ci.dispatcher import dispatcher_server
 
 
 def run_dispatcher():
@@ -22,7 +22,7 @@ def run_dispatcher():
 
     args = parser.parse_args()
 
-    dispatcher(args.host, int(args.port))
+    dispatcher_server(args.host, int(args.port))
 
 
 if __name__ == "__main__":
