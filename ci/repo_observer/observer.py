@@ -8,7 +8,6 @@ commit ID. This has been simplified to only dispatch the latest commit ID to the
 typical repo observer will receive notifications from the Repository, but some VCS systems do not have built in
 notification systems.
 """
-import argparse
 import os
 import re
 import socket
@@ -18,47 +17,26 @@ import sys
 import time
 
 from .exceptions import RepoObserverError
-from ..utils import communicate
+from ci.utils import communicate
 from ci.logger import logger
 
 
-def poll():
+def observer(dispatcher_host, dispatcher_port, repo, poll, branch):
     """
-    Repo Observer poll function that communicates with the dispatcher server to send tests that are found
+    Repo Observer that communicates with the dispatcher server to send tests that are found
     on the repository on new changes commited to the repo. This will watch the repo every 5 seconds for any
     new commit that is made & make a dispatch to the dispatch server to initiate running of new tests.
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--dispatcher-server",
-        help="dispatcher host:port , by default it uses localhost:8000",
-        default="localhost:8000",
-        action="store",
-    )
-    parser.add_argument(
-        "--repo", metavar="REPO", type=str, help="path to the repository to observe"
-    )
-    parser.add_argument(
-        "--poll", help="how long to keep polling repository", default=5, type=int
-    )
-    parser.add_argument(
-        "--branch", help="which branch to run tests against", default="master", type=str
-    )
-
-    args = parser.parse_args()
-    dispatcher_host, dispatcher_port = args.dispatcher_server.split(":")
 
     while True:
         try:
             # call the bash script that will update the repo and check
             # for changes. If there's a change, it will drop a .commit_id file
             # with the latest commit in the current working directory
-            logger.info(f"cloning repo {args.repo}")
-            subprocess.check_output(
-                ["./scripts/update_repo.sh", args.repo, args.branch]
-            )
+            logger.info(f"cloning repo {repo}")
+            subprocess.check_output(["./scripts/update_repo.sh", repo, branch])
         except subprocess.CalledProcessError as e:
-            logger.error(f"Failed to update & check repo {args.repo}, err: {e.output}")
+            logger.error(f"Failed to update & check repo {repo}, err: {e.output}")
             raise RepoObserverError(
                 f"Could not update & check repository. Err: {e.output}"
             )
@@ -91,13 +69,9 @@ def poll():
                         f"Failed to dispatch test to dispatcher. Is Dispatcher OK? err: {response}"
                     )
                     raise RepoObserverError(f"Could not dispatch test: {response}")
-                logger.info(f"Dispatched tests for {args.repo}!")
+                logger.info(f"Dispatched tests for {repo}!")
             else:
                 # Dispatcher has an issue
                 raise RepoObserverError(f"Could not dispatch test {response}")
 
-        time.sleep(args.poll)
-
-
-if __name__ == "__main__":
-    poll()
+        time.sleep(poll)

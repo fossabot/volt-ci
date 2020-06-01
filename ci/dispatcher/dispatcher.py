@@ -14,9 +14,9 @@ import time
 from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
 
-from utils.logger import logger
-from utils import communicate
-from ..utils import dispatch_tests
+from ci.logger import logger
+from ci.utils import communicate
+from .utils import dispatch_tests
 
 from .threading_tcp_server import ThreadingTCPServer
 from .dispatcher_handler import DispatcherHandler
@@ -35,7 +35,7 @@ def runner_checker(server):
         for commit, assigned_runner in server.dispathed_commits.items():
             if assigned_runner == runner:
                 del server.dispatched_commits[commit]
-                serve.pending_commits.append(commit)
+                server.pending_commits.append(commit)
                 break
         server.runners.remove(runner)
 
@@ -67,32 +67,17 @@ def redistribute(server):
             time.sleep(5)
 
 
-def serve():
+def dispatcher(host, port):
     """
     Entry point to dispatch server
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--host",
-        help="Dispatchers host, defaults to localhost",
-        default="localhost",
-        action="store",
-    )
-    parser.add_argument(
-        "--port",
-        help="Dispatchers port, defaults to 8000",
-        default=8000,
-        action="store",
-    )
 
-    args = parser.parse_args()
+    server = ThreadingTCPServer((host, int(port)), DispatcherHandler)
 
-    server = ThreadingTCPServer((args.host, int(args.port)), DispatcherHandler)
+    logger.info(f"Dispatcher Server running on address {host}:{port}")
 
-    logger.info(f"Dispatcher Server running on address {args.host}:{args.port}")
-
-    runner_heartbeat = Thread(target=runner_checker, args=(server))
-    redistributor = Thread(target=redistribute, args=(server))
+    runner_heartbeat = Thread(target=runner_checker, args=(server,))
+    redistributor = Thread(target=redistribute, args=(server,))
 
     try:
         runner_heartbeat.start()
@@ -105,7 +90,3 @@ def serve():
         server.dead = True
         runner_heartbeat.join()
         redistributor.join()
-
-
-if __name__ == "__main__":
-    serve()

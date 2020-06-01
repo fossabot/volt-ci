@@ -8,7 +8,7 @@ import socketserver
 import re
 import os
 
-from logger import logger
+from ci.logger import logger
 from .utils import dispatch_tests
 
 

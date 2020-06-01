@@ -5,8 +5,8 @@ Contains util functions re-usable in dispatcher server
 """
 import time
 
-from logger import logger
-from utils import communicate
+from ci.logger import logger
+from ci.utils import communicate
 
 
 def dispatch_tests(server, commit_id):
