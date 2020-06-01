@@ -34,18 +34,15 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
     command_re = re.compile(r"(\w+)(:.+)*")
     BUF_SIZE = 1024
 
-    def __init__(self):
-        super().__init__()
+    def handle(self):
+        self.data = self.request.recv(self.BUF_SIZE).strip()
+        self.command_groups = self.command_re.match(self.data)
         self.commands = {
             "status": self.check_status,
             "register": self.register,
             "dispatch": self.dispatch,
             "results": self.results,
         }
-
-    def handle(self):
-        self.data = self.request.recv(self.BUF_SIZE).strip()
-        self.command_groups = self.command_re.match(self.data)
 
         if not self.command_groups:
             self.invalid_command()

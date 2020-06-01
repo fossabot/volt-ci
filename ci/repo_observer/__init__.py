@@ -34,14 +34,14 @@ def observer(dispatcher_host, dispatcher_port, repo, poll, branch):
             # for changes. If there's a change, it will drop a .commit_id file
             # with the latest commit in the current working directory
             logger.info(f"cloning repo {repo}")
-            subprocess.check_output(["./scripts/update_repo.sh", repo, branch])
+            subprocess.check_output(["./update_repo.sh", repo, branch])
         except subprocess.CalledProcessError as e:
             logger.error(f"Failed to update & check repo {repo}, err: {e.output}")
             raise RepoObserverError(
                 f"Could not update & check repository. Err: {e.output}"
             )
 
-        if os.path.isfile("files/.commit_id"):
+        if os.path.isfile(".commit_id"):
             # great, we have a change! let's execute the tests
             # First, check the status of the dispatcher server to see
             # if we can send the tests
@@ -57,7 +57,7 @@ def observer(dispatcher_host, dispatcher_port, repo, poll, branch):
                 # Dispatcher is available
                 commit = ""
 
-                with open("files/.commit_id") as commit_file:
+                with open(".commit_id") as commit_file:
                     commit = commit_file.readline
 
                 response = communicate(

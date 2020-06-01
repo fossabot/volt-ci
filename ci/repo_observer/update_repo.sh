@@ -1,9 +1,18 @@
 #!/bin/bash
 
-source ./scripts/run_or_fail.sh
+# helper method for providing error messages for a command
+run_or_fail() {
+  local explanation=$1
+  shift 1
+  "$@"
+  if [ $? != 0 ]; then
+    echo $explanation 1>&2
+    exit 1
+  fi
+}
 
 # delete previous id 
-rm -f files/.commit_id
+rm -f .commit_id
 
 # go to repo and update it to given commit
 run_or_fail "Repository folder not found!" pushd $1 1> /dev/null

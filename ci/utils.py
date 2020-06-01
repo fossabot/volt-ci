@@ -19,7 +19,7 @@ def communicate(host, port, request):
     """
     s = socket()
     s.connect((host, port))
-    s.send(request)
+    s.send(bytes(request, "utf-8"))
     response = s.recv(1024)
     s.close()
     return response

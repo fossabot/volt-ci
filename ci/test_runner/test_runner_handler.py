@@ -13,13 +13,10 @@ class TestRunnerHandler(BaseRequestHandler):
 
     command_re = re.compile(r"(\w+)(:.+)*")
 
-    def __init__(self):
-        super().__init__()
-        self.commands = {"ping": self.health_check, "runtest": self.runtest}
-
     def handle(self):
         self.data = self.request.recv(1024).strip()
         self.command_groups = self.command_re.match(self.data)
+        self.commands = {"ping": self.health_check, "runtest": self.runtest}
         command = command_groups.group(1)
 
         # Handle commands, if none match, handle invalid command

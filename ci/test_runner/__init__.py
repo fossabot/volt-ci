@@ -55,7 +55,7 @@ def test_runner_server(host, port, repo, dispatcher_host, dispatcher_port):
 
     runner_host = host
     runner_port = None
-    tries = 100
+    tries = 0
 
     if not port:
         runner_port = range_start
