@@ -1,0 +1,36 @@
+version: "3.7"
+
+services: 
+  observer:
+    build: 
+      context: .
+      dockerfile: Dockerfile.observer
+    container_name: observer
+    environment: 
+      REPOSITORY: ${REPOSITORY}
+      POLL: "5"
+      BRANCH: ${BRANCH}
+    command: ["python", "run_repo_observer.py", "--repo", "$REPOSITORY", "--poll", "$POLL", "--branch", "$BRANCH"]
+
+  dispatcher:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dispatcher
+    container_name: dispatcher
+    ports: 
+      - 8000:8000
+    environment:
+      PORT: "8000"
+    command: ["python", "run_dispatcher_server.py", "--port", "$PORT"]
+
+  runner:
+    build: 
+      context: .
+      dockerfile: Dockerfile.test_runner
+    container_name: test_runner
+    ports: 
+      - 8900:8900
+    environment:
+      REPOSITORY: ${REPOSITORY}
+    command: ["python", "run_test_runner.py", "--repo", "$REPOSITORY", "--dispatcher-server", "observer:8000"]
+ 

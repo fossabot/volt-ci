@@ -1,0 +1,12 @@
+FROM python:3.8
+
+WORKDIR /usr/src/app
+
+COPY Pipfile Pipfile
+COPY run_repo_observer.py run_repo_observer.py
+COPY ci/__init__.py ci/__init__.py
+COPY ci/repo_observer ci/repo_observer
+COPY ci/logger.py ci/logger.py
+COPY ci/utils.py ci/utils.py
+
+RUN pip install loguru

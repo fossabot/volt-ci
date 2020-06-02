@@ -1,0 +1,35 @@
+# Reference:https://github.com/marketplace/actions/build-and-push-docker-images
+name: TestRunner Docker Image CI
+
+on:
+  push:
+    branches: [ master, beta, develop ]
+
+jobs:
+
+  push_to_registries:
+    name: Pushes TestRunner Docker image to Dockerhub and Github Registry
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Push to Docker Hub
+      uses: docker/build-push-action@v1
+      with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: thelusina/volt-ci-test-runner
+          dockerfile: "Dockerfile.test_runner"
+          tag_with_ref: true
+
+    - name: Push to GitHub Packages
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: thelusina/volt-ci/volt-ci-test-runner
+        dockerfile: "Dockerfile.test_runner"
+        tag_with_ref: true

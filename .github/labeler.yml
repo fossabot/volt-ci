@@ -1,0 +1,47 @@
+# https://github.com/actions/labeler
+dispatcher:
+  - ci/dispatcher/**/*
+  - run_dispatcher_server.py
+
+observer:
+  - ci/repo_observer/**/*
+  - run_repo_observer.py
+
+test_runner:
+  - ci/test_runner/**/*
+  - run_test_runner.py
+
+utils:
+  - ci/utils.py
+
+logger:
+  - ci/logger.py
+
+config:
+  - ci/config.(ts|js)
+  - tsconfig.json
+
+chore:
+  - tslint.json
+  - .gitignore
+  - .env.*
+  - lintstagedrc
+  - github/*
+  - .npmignore
+
+build:
+  - Dockerfile.*
+  - docker-compose.yml
+
+dependencies:
+  - Pipfile
+  - Pipfile.lock
+ 
+documentation:
+  - ./.*md
+  - images/
+  - LICENSE
+
+ci:
+  - .releaserc.json
+  - github/workflows/*
