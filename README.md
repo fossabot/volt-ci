@@ -111,3 +111,41 @@ This component actually runs the tests as discovered in a repository. It will re
 with a commit id and will begin running tests for that repository. This will communicate with dispatcher server every 5 seconds to check if it is still alive. If the response from dispatcher server is not OK, the test runner server will terminate & shutdown to conserve resources as it will not have anywhere to report test results nor receive commands to run.
 
 The implementation for a TCP server is similar to the Dispatcher server with new connection requests being handled on a separate thread.
+
+#### Running the code
+
+To run this simple CI system locally, you will have to use 3 different terminal shells for each process. We start the dispatcher first.
+
+``` bash
+python run_dispatcher_server.py
+```
+
+In a new shell, we start the test runner, so that it can register itself wit the dispather
+
+``` bash
+python run_test_runner.py --repo /path/too/repo
+```
+
+> This will assigning itself a port in the range of 8900-9000. You can run as many test runners as possible
+
+now start the repo observer
+
+``` bash
+python run_repo_observer.py --repo /path/to/repo
+```
+
+Then repo_observer will realize that there's a new commit and notify the dispatcher. You can see the output in their respective shells, so you can monitor them. Once the dispatcher receives the test results, it stores them in a test_results/ folder in the dispatchet directory, using the commit ID as the filename.
+
+## Error handling
+
+Volt CI system includes some simple error handling.
+
+If you kill the test_runner process, dispatcher will figure out that the runner is no longer available and will remove it from the pool.
+
+You can also kill the test runner, to simulate a machine crash or network failure. If you do so, the dispatcher will realize the runner went down and will give another test runner the job if one is available in the pool, or will wait for a new test runner to register itself in the pool.
+
+If you kill the dispatcher, the repository observer will figure out it went down and will throw an exception. The test runners will also notice, and shut down.
+
+## Conclusion
+
+By separating concerns into their own processes, we were able to build the fundamentals of a distributed continuous integration system. With processes communicating with each other via socket requests, we are able to distribute the system across multiple machines, helping to make our system more reliable and scalable.
