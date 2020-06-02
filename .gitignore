@@ -166,3 +166,4 @@ pip-selfcheck.json
 .vscode
 .envrc
 .commit_id
+test_results

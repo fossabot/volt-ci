@@ -11,6 +11,8 @@ import os
 from ci.logger import logger
 from .utils import dispatch_tests
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 class DispatcherHandler(socketserver.BaseRequestHandler):
     """
@@ -82,14 +84,20 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
         & sends it to a test runner
         """
         logger.info("Dispatching to test runner")
-        commit_id = self.command_groups.group(3)[1:]
+        commit_id_and_branch = self.command_groups.group(3)[1:]
+
+        c_and_b = commit_id_and_branch.split(":")
+        commit_id = c_and_b[0]
+        branch = c_and_b[1]
+
+        logger.debug(f"Received commit_id {commit_id}")
 
         if not self.server.runners:
             self.request.sendall(b"No runners are registered")
         else:
             # we can dispatch tests, we have at least 1 test runner available
             self.request.sendall(b"OK")
-            dispatch_tests(self.server, commit_id)
+            dispatch_tests(self.server, commit_id, branch)
 
     def results(self):
         """
@@ -103,7 +111,7 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
         <results> holds actual result output
         """
 
-        logger.info("got test results")
+        logger.info("Received test results from Test Runner")
 
         results = self.command_groups.group(3)[1:]
         results = results.split(":")
@@ -121,11 +129,13 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
 
         del self.server.dispatched_commits[commit_id]
 
-        if not os.path.exists("test_results"):
-            os.makedirs("test_results")
+        test_results_path = f"{basedir}/test_results"
 
-        with open(f"test_results/{commit_id}", w) as f:
-            data = self.data.split(":")[3:]
+        if not os.path.exists(test_results_path):
+            os.makedirs(test_results_path)
+
+        with open(f"{test_results_path}/{commit_id}", "w") as f:
+            data = f"{self.data}".split(":")[3:]
             data = "\n".join(data)
             f.write(data)
 

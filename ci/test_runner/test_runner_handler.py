@@ -8,6 +8,8 @@ import unittest
 from ci.logger import logger
 from ci.utils import communicate
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 class TestRunnerHandler(BaseRequestHandler):
 
@@ -50,17 +52,22 @@ class TestRunnerHandler(BaseRequestHandler):
         else:
             logger.info("Not busy at the moment :)")
             self.request.sendall(b"OK")
-            commit_id = self.command_groups.group(3)[1:]
+            commit_id_and_branch = self.command_groups.group(3)[1:]
+
+            c_and_b = commit_id_and_branch.split(":")
+            commit_id = c_and_b[0]
+            branch = c_and_b[1]
+
             self.server.busy = True
-            self.run_tests(commit_id, self.server.repo_folder)
+            self.run_tests(commit_id, branch, self.server.repo_folder)
             self.server.busy = False
 
-    def run_tests(self, commit_id, repo_folder):
+    def run_tests(self, commit_id, branch, repo_folder):
         """
         Runs tests as found in the repository
         """
         output = subprocess.check_output(
-            ["./test_runner_script.sh", repo_folder, commit_id]
+            [f"{basedir}/test_runner_script.sh", repo_folder, commit_id, branch]
         )
 
         test_folder = os.path.join(repo_folder, "tests")
@@ -74,6 +81,6 @@ class TestRunnerHandler(BaseRequestHandler):
         output = result_file.read()
         communicate(
             self.server.dispatcher_server["host"],
-            int(self.dispather_server["port"]),
+            int(self.server.dispatcher_server["port"]),
             f"results:{commit_id}:{len(output)}:{output}",
         )

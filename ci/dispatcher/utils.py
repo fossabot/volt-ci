@@ -9,25 +9,28 @@ from ci.logger import logger
 from ci.utils import communicate
 
 
-def dispatch_tests(server, commit_id):
+def dispatch_tests(server, commit_id, branch):
     """
     Dispatches tests to test runners
 
     :param server: dispatcher server
     :param commit_id: commit id to dispatch to test runners
+    :param branch: branch to run tests on
     """
 
     while True:
-        logger.info("attempting to dispatch to runners")
+        logger.info(
+            f"Attempting to dispatch commit {commit_id} on branch {branch} to runners..."
+        )
 
         for runner in server.runners:
             response = communicate(
-                runner["host"], int(runner["port"]), f"runtest:{commit_id}"
+                runner["host"], int(runner["port"]), f"runtest:{commit_id}:{branch}"
             )
 
-            if response == "OK":
+            if response == b"OK":
                 logger.info(
-                    f"Adding ID: {commit_id} to Runner: {runner['host']}:{runner['port']}"
+                    f"Adding ID: {commit_id} for branch {branch} to Runner: {runner['host']}:{runner['port']}"
                 )
 
                 server.dispatched_commits[commit_id] = runner

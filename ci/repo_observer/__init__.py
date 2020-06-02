@@ -43,11 +43,15 @@ def observer(dispatcher_host, dispatcher_port, repo, poll, branch):
                 f"Could not update & check repository. Err: {e.output}"
             )
 
-        if os.path.isfile(f"{basedir}/.commit_id"):
+        commit_id_file = f"{basedir}/.commit_id"
+        if os.path.isfile(commit_id_file):
             # great, we have a change! let's execute the tests
             # First, check the status of the dispatcher server to see
             # if we can send the tests
             try:
+                logger.info(
+                    f"Checking dispatcher server status {dispatcher_host}:{dispatcher_port}"
+                )
                 response = communicate(dispatcher_host, int(dispatcher_port), "status")
             except socket.error as e:
                 logger.error(
@@ -59,11 +63,11 @@ def observer(dispatcher_host, dispatcher_port, repo, poll, branch):
                 # Dispatcher is available
                 commit = ""
 
-                with open("{basedir}/.commit_id") as commit_file:
-                    commit = commit_file.readline
+                with open(commit_id_file) as commit_file:
+                    commit = commit_file.readline()
 
                 response = communicate(
-                    dispatcher_host, int(dispatcher_port), f"dispatch:{commit}"
+                    dispatcher_host, int(dispatcher_port), f"dispatch:{commit}:{branch}"
                 )
 
                 if response != b"OK":
