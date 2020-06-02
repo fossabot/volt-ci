@@ -47,13 +47,19 @@ def dispatcher_checker(server):
                 return
 
 
-def test_runner_server(host, port, repo, dispatcher_host, dispatcher_port):
+def test_runner_server(
+    host, port, repo, dispatcher_host, dispatcher_port, reporter_host, reporter_port
+):
     """
     This invokes the Test Runner server.
 
     :param host: host to use
     :param port: port to use
     :param repo: repository to watch
+    :param dispatcher_host: Dispatcher host
+    :param dispatcher_port: Dispatcher Port
+    :param reporter_host: Reporter Host
+    :param reporter_port: Reporter Port
     """
     range_start = 8900
 
@@ -95,6 +101,7 @@ def test_runner_server(host, port, repo, dispatcher_host, dispatcher_port):
     server.repo_folder = repo
 
     server.dispatcher_server = {"host": dispatcher_host, "port": dispatcher_port}
+    server.reporter_service = {"host": reporter_host, "port": reporter_port}
     response = communicate(
         server.dispatcher_server["host"],
         int(server.dispatcher_server["port"]),
