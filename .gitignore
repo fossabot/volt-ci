@@ -167,3 +167,4 @@ pip-selfcheck.json
 .envrc
 .commit_id
 test_results
+results

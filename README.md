@@ -107,16 +107,24 @@ It handles several commands, most are listed in the dispatch_handler.py source c
 
     This is used to dispatch any new commit_ids to the test runners as recevied from the repo observer
 
-4. _results_
-
-    This is used by test runners to communicate results of running tests against the given commit_id
-
 ### Test Runner
 
 This component actually runs the tests as discovered in a repository. It will receive commands from dispatcher server
 with a commit id and will begin running tests for that repository. This will communicate with dispatcher server every 5 seconds to check if it is still alive. If the response from dispatcher server is not OK, the test runner server will terminate & shutdown to conserve resources as it will not have anywhere to report test results nor receive commands to run.
 
 The implementation for a TCP server is similar to the Dispatcher server with new connection requests being handled on a separate thread.
+
+#### Reporter Service
+
+This is used to report test results as received from test runners. This can be used to display test results to clients/users
+
+1. _status_
+
+    This is used to check the status of the reporter service
+
+2. _results_
+
+    This is used by test runners to communicate results of running tests against the given commit_id
 
 #### Running the code
 
@@ -133,6 +141,14 @@ python run_test_runner.py --repo /path/too/repo
 ```
 
 > This will assigning itself a port in the range of 8900-9000. You can run as many test runners as possible
+
+In a new shell, we start the reporter service
+
+``` bash
+python run_reporter_service.py
+```
+
+> Refer to the CLI options, this will start with all defaults applied
 
 now start the repo observer
 
