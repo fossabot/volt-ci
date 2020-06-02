@@ -27,6 +27,12 @@ def run_test_runner():
         action="store",
     )
     parser.add_argument(
+        "--reporter-service",
+        help="reporter host:port, by default it uses localhost:8555",
+        default="localhost:8555",
+        action="store",
+    )
+    parser.add_argument(
         "--repo",
         metavar="REPO",
         type=str,
@@ -39,9 +45,16 @@ def run_test_runner():
     runner_port = args.port
     repository = args.repo
     dispatcher_host, dispatcher_port = args.dispatcher_server.split(":")
+    reporter_host, reporter_port = args.reporter_service.split(":")
 
     test_runner_server(
-        runner_host, runner_port, repository, dispatcher_host, dispatcher_port
+        runner_host,
+        runner_port,
+        repository,
+        dispatcher_host,
+        dispatcher_port,
+        reporter_host,
+        reporter_port,
     )
 
 

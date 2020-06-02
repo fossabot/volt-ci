@@ -4,6 +4,7 @@ import re
 import subprocess
 import os
 import unittest
+import socket
 
 from ci.logger import logger
 from ci.utils import communicate
@@ -77,10 +78,34 @@ class TestRunnerHandler(BaseRequestHandler):
         result_file.close()
         result_file = open("results", "r")
 
-        # send results to dispatcher
+        # send results to reporter service
         output = result_file.read()
-        communicate(
-            self.server.dispatcher_server["host"],
-            int(self.server.dispatcher_server["port"]),
-            f"results:{commit_id}:{len(output)}:{output}",
-        )
+
+        # check that reporter service is alive & running before sending output
+        # TODO: cache/retry logic to send test results to reporter service in case it is unreachable
+        try:
+            response = communicate(
+                self.server.reporter_service["host"],
+                int(self.server.reporter_service["port"]),
+                "status",
+            )
+
+            if response != b"OK":
+                logger.warning(
+                    "Reporter Service does not seem ok, Can't send test results..."
+                )
+                return
+            elif response == b"OK":
+                logger.info(
+                    "Sending test results to Reporter Service..."
+                )
+                communicate(
+                    self.server.reporter_service["host"],
+                    int(self.server.reporter_service["port"]),
+                    f"results:{commit_id}:{len(output)}:{output}",
+                )
+        except socket.error as e:
+            logger.error(
+                "Cannot communicate with Reporter Service..."
+            )
+            return

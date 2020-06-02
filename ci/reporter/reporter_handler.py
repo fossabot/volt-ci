@@ -9,10 +9,11 @@ import re
 import os
 
 from ci.logger import logger
-from .utils import dispatch_tests
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-class DispatcherHandler(socketserver.BaseRequestHandler):
+class ReporterHandler(socketserver.BaseRequestHandler):
     """
     Inherits from socketserver's BaseRequestHandler
 
@@ -40,8 +41,7 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
 
         self.commands = {
             "status": self.check_status,
-            "register": self.register,
-            "dispatch": self.dispatch,
+            "results": self.results,
         }
 
         if not self.command_groups:
@@ -60,38 +60,45 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
         """
         Checks the status of the dispatcher server
         """
-        logger.info("Checking Dispatch Server Status")
+        logger.info("Checking Reporter Service Status")
         self.request.sendall(b"OK")
 
-    def register(self):
+    def results(self):
         """
-        registers new test runners to the runners pool
+        This command is used by the test runners to post back results to the dispatcher server
+        it is used in the format:
+
+        `results:<commit ID>:<length of results in bytes>:<results>`
+
+        <commit ID> is used to identify which commit ID the tests were run against
+        <length of results in bytes> is used to figure out how big a buffer is needed for the results data
+        <results> holds actual result output
         """
-        address = self.command_groups.group(3)
-        host, port = re.findall(r":(\w*)", address)
-        runner = {"host": host, "port": port}
-        logger.info(f"Registering new test runner {host}:{port}")
-        self.server.runners.append(runner)
+
+        logger.info("Received test results from Test Runner")
+
+        results = self.command_groups.group(3)[1:]
+        results = results.split(":")
+
+        commit_id = results[0]
+        length_msg = int(results[1])
+
+        # 3 is the number of ":" in the sent command
+        remaining_buffer = self.BUF_SIZE - (
+            len("results") + len(commit_id) + len(results[1]) + 3
+        )
+
+        if length_msg > remaining_buffer:
+            self.data += self.request.recv(length_msg - remaining_buffer).strip()
+
+        test_results_path = f"{basedir}/test_results"
+
+        if not os.path.exists(test_results_path):
+            os.makedirs(test_results_path)
+
+        with open(f"{test_results_path}/{commit_id}", "w") as f:
+            data = f"{self.data}".split(":")[3:]
+            data = "\n".join(data)
+            f.write(data)
+
         self.request.sendall(b"OK")
-
-    def dispatch(self):
-        """
-        dispatch command is used to dispatch a commit against a test runner. When the repo
-        observer sends this command as 'dispatch:<commit_id>'. The dispatcher parses the commit_id
-        & sends it to a test runner
-        """
-        logger.info("Dispatching to test runner")
-        commit_id_and_branch = self.command_groups.group(3)[1:]
-
-        c_and_b = commit_id_and_branch.split(":")
-        commit_id = c_and_b[0]
-        branch = c_and_b[1]
-
-        logger.debug(f"Received commit_id {commit_id}")
-
-        if not self.server.runners:
-            self.request.sendall(b"No runners are registered")
-        else:
-            # we can dispatch tests, we have at least 1 test runner available
-            self.request.sendall(b"OK")
-            dispatch_tests(self.server, commit_id, branch)
