@@ -1,5 +1,7 @@
 # Volt CI
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/aef9bbd4a1e640c0b3fab570818d76d6)](https://app.codacy.com/manual/BrianLusina/volt-ci?utm_source=github.com&utm_medium=referral&utm_content=BrianLusina/volt-ci&utm_campaign=Badge_Grade_Dashboard)
+
 This is a simplified minimal continuous integration (CI) system that demonstrates how typical CI systems work. The assumption here is that you have git installed on your PATH.
 
 ## Pre-requisites
