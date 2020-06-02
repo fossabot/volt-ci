@@ -13,7 +13,6 @@ import re
 import socket
 import socketserver
 import subprocess
-import sys
 import time
 
 from .exceptions import RepoObserverError

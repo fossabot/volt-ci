@@ -42,7 +42,7 @@ def runner_checker(server):
         time.sleep(1)
 
         for runner in server.runners:
-            s = socket(AF_INET, SOCK_STREAM)
+            socket(AF_INET, SOCK_STREAM)
 
             try:
                 response = communicate(runner["host"], int(runner["port"]), "ping")
@@ -51,6 +51,7 @@ def runner_checker(server):
                     logger.warning(f"Removing runner {runner} from pool")
                     manage_commit_lists(runner)
             except socket.error as e:
+                logger.error(f"Failed to communicate with runner {runner}, Err: {e}")
                 manage_commit_lists(runner)
 
 
