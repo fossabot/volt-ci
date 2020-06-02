@@ -20,6 +20,8 @@ from .exceptions import RepoObserverError
 from ci.utils import communicate
 from ci.logger import logger
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 def observer(dispatcher_host, dispatcher_port, repo, poll, branch):
     """
@@ -27,21 +29,21 @@ def observer(dispatcher_host, dispatcher_port, repo, poll, branch):
     on the repository on new changes commited to the repo. This will watch the repo every 5 seconds for any
     new commit that is made & make a dispatch to the dispatch server to initiate running of new tests.
     """
-
+    logger.info(f"Running Repo Observer")
     while True:
         try:
             # call the bash script that will update the repo and check
             # for changes. If there's a change, it will drop a .commit_id file
             # with the latest commit in the current working directory
             logger.info(f"cloning repo {repo}")
-            subprocess.check_output(["./update_repo.sh", repo, branch])
+            subprocess.check_output([f"{basedir}/update_repo.sh", repo, branch])
         except subprocess.CalledProcessError as e:
             logger.error(f"Failed to update & check repo {repo}, err: {e.output}")
             raise RepoObserverError(
                 f"Could not update & check repository. Err: {e.output}"
             )
 
-        if os.path.isfile(".commit_id"):
+        if os.path.isfile(f"{basedir}/.commit_id"):
             # great, we have a change! let's execute the tests
             # First, check the status of the dispatcher server to see
             # if we can send the tests
@@ -57,7 +59,7 @@ def observer(dispatcher_host, dispatcher_port, repo, poll, branch):
                 # Dispatcher is available
                 commit = ""
 
-                with open(".commit_id") as commit_file:
+                with open("{basedir}/.commit_id") as commit_file:
                     commit = commit_file.readline
 
                 response = communicate(
