@@ -4,6 +4,7 @@ Utils
 Will contain common utility or helper functions that will be re-useable and used across the system
 """
 from socket import socket
+from .logger import logger
 
 
 def communicate(host, port, request):
@@ -19,7 +20,8 @@ def communicate(host, port, request):
     """
     s = socket()
     s.connect((host, port))
-    s.send(bytes(request, "utf-8"))
+    request = bytes(request, "utf-8")
+    s.send(request)
     response = s.recv(1024)
     s.close()
     return response

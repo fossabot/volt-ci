@@ -33,12 +33,12 @@ def dispatcher_checker(server):
                     "status",
                 )
 
-                if response != "OK":
-                    logger.warning("Dispatcher not reachable")
+                if response != b"OK":
+                    logger.warning("Dispatcher Server does not seem ok, shutting down...")
                     server.shutdown()
                     return
             except socket.error as e:
-                logger.warning("Can't communicate with dispatcher server")
+                logger.warning("Cannot communicate with Dispatcher Server, shutting down...")
                 server.shutdown()
                 return
 
@@ -62,6 +62,7 @@ def test_runner_server(host, port, repo, dispatcher_host, dispatcher_port):
 
         while tries < 100:
             try:
+                logger.info(f"TestRunner Server running on address -> {runner_host}:{runner_port}")
                 server = ThreadingTCPServer(
                     (runner_host, runner_port), TestRunnerHandler
                 )
@@ -80,6 +81,7 @@ def test_runner_server(host, port, repo, dispatcher_host, dispatcher_port):
             )
     else:
         runner_port = int(port)
+        logger.info(f"TestRunner Server running on address -> {runner_host}:{runner_port}")
         server = ThreadingTCPServer((runner_host, runner_port), TestRunnerHandler)
 
     server.repo_folder = repo
@@ -90,7 +92,7 @@ def test_runner_server(host, port, repo, dispatcher_host, dispatcher_port):
         int(server.dispatcher_server["port"]),
         f"register:{runner_host}:{runner_port}",
     )
-    if response != "OK":
+    if response != b"OK":
         logger.error(f"Cannot register with dispatcher: {response}")
         raise TestRunnerError("Can't register with dispatcher!")
 

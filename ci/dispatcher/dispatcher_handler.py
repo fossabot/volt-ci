@@ -31,12 +31,13 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
     :cvar BUG_SIZE: buffer size
     """
 
-    command_re = re.compile(r"(\w+)(:.+)*")
+    command_re = re.compile(r"([b])'(\w+)(:.+)*'")
     BUF_SIZE = 1024
 
     def handle(self):
         self.data = self.request.recv(self.BUF_SIZE).strip()
-        self.command_groups = self.command_re.match(self.data)
+        self.command_groups = self.command_re.match(f"{self.data}")
+
         self.commands = {
             "status": self.check_status,
             "register": self.register,
@@ -48,31 +49,31 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
             self.invalid_command()
             return
 
-        command = self.command_groups.group(1)
+        command = self.command_groups.group(2)
 
         # Handle commands, if none match, handle invalid command
         self.commands.get(command, self.invalid_command)()
 
     def invalid_command(self):
-        self.request.sendall("Invalid command")
+        self.request.sendall(b"Invalid command")
 
     def check_status(self):
         """
         Checks the status of the dispatcher server
         """
         logger.info("Checking Dispatch Server Status")
-        self.request.sendall("OK")
+        self.request.sendall(b"OK")
 
     def register(self):
         """
         registers new test runners to the runners pool
         """
-        logger.info("Registering new test runner")
-        address = self.command_groups.group(2)
+        address = self.command_groups.group(3)
         host, port = re.findall(r":(\w*)", address)
         runner = {"host": host, "port": port}
+        logger.info(f"Registering new test runner {host}:{port}")
         self.server.runners.append(runner)
-        self.request.sendall("OK")
+        self.request.sendall(b"OK")
 
     def dispatch(self):
         """
@@ -81,13 +82,13 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
         & sends it to a test runner
         """
         logger.info("Dispatching to test runner")
-        commit_id = self.command_groups.group(2)[1:]
+        commit_id = self.command_groups.group(3)[1:]
 
         if not self.server.runners:
-            self.request.sendall("No runners are registered")
+            self.request.sendall(b"No runners are registered")
         else:
             # we can dispatch tests, we have at least 1 test runner available
-            self.request.sendall("OK")
+            self.request.sendall(b"OK")
             dispatch_tests(self.server, commit_id)
 
     def results(self):
@@ -104,7 +105,7 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
 
         logger.info("got test results")
 
-        results = self.command_groups.group(2)[1:]
+        results = self.command_groups.group(3)[1:]
         results = results.split(":")
 
         commit_id = results[0]
@@ -128,4 +129,4 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
             data = "\n".join(data)
             f.write(data)
 
-        self.request.sendall("OK")
+        self.request.sendall(b"OK")

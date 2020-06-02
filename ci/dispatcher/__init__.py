@@ -47,7 +47,7 @@ def runner_checker(server):
             try:
                 response = communicate(runner["host"], int(runner["port"]), "ping")
 
-                if response != "pong":
+                if response != b"pong":
                     logger.warning(f"Removing runner {runner} from pool")
                     manage_commit_lists(runner)
             except socket.error as e:

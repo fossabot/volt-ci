@@ -11,13 +11,13 @@ from ci.utils import communicate
 
 class TestRunnerHandler(BaseRequestHandler):
 
-    command_re = re.compile(r"(\w+)(:.+)*")
+    command_re = re.compile(r"([b])'(\w+)(:.+)*'")
 
     def handle(self):
         self.data = self.request.recv(1024).strip()
-        self.command_groups = self.command_re.match(self.data)
+        self.command_groups = self.command_re.match(f"{self.data}")
         self.commands = {"ping": self.health_check, "runtest": self.runtest}
-        command = command_groups.group(1)
+        command = self.command_groups.group(2)
 
         # Handle commands, if none match, handle invalid command
         self.commands.get(command, self.invalid_command)()
@@ -27,7 +27,7 @@ class TestRunnerHandler(BaseRequestHandler):
         responds to client(in this case dispatcher handler) or any other client
         that the command sent is invalid
         """
-        self.request.sendall("Invalid command")
+        self.request.sendall(b"Invalid command")
 
     def health_check(self):
         """
@@ -35,7 +35,7 @@ class TestRunnerHandler(BaseRequestHandler):
         and commands
         """
         self.server.last_communication = time.time()
-        self.request.sendall("pong")
+        self.request.sendall(b"pong")
 
     def runtest(self):
         """
@@ -46,11 +46,11 @@ class TestRunnerHandler(BaseRequestHandler):
         """
         if self.server.busy:
             logger.warning("I am currently busy...")
-            self.request.sendall("BUSY")
+            self.request.sendall(b"BUSY")
         else:
             logger.info("Not busy at the moment :)")
-            self.request.sendall("OK")
-            commit_id = self.command_groups.group(2)[1:]
+            self.request.sendall(b"OK")
+            commit_id = self.command_groups.group(3)[1:]
             self.server.busy = True
             self.run_tests(commit_id, self.server.repo_folder)
             self.server.busy = False

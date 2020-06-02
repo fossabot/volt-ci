@@ -53,7 +53,7 @@ def observer(dispatcher_host, dispatcher_port, repo, poll, branch):
                 )
                 raise RepoObserverError(f"Could not contact dispatcher {e}")
 
-            if response == "OK":
+            if response == b"OK":
                 # Dispatcher is available
                 commit = ""
 
@@ -64,7 +64,7 @@ def observer(dispatcher_host, dispatcher_port, repo, poll, branch):
                     dispatcher_host, int(dispatcher_port), f"dispatch:{commit}"
                 )
 
-                if response != "OK":
+                if response != b"OK":
                     logger.error(
                         f"Failed to dispatch test to dispatcher. Is Dispatcher OK? err: {response}"
                     )
