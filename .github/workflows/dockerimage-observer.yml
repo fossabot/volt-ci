@@ -1,5 +1,5 @@
 # Reference:https://github.com/marketplace/actions/build-and-push-docker-images
-name: Observer Docker Image CI
+name: Observer Docker Image Build
 
 on:
   push:
@@ -30,6 +30,6 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
-        repository: thelusina/volt-ci/volt-ci-observer
+        repository: BrianLusina/volt-ci/volt-ci-observer
         dockerfile: "Dockerfile.observer"
         tag_with_ref: true
