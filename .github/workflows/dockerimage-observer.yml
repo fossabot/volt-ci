@@ -30,6 +30,6 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
-        repository: BrianLusina/volt-ci/volt-ci-observer
+        repository: brianlusina/volt-ci/volt-ci-observer
         dockerfile: "Dockerfile.observer"
         tag_with_ref: true
