@@ -4,6 +4,7 @@
 ![TestRunner Docker Image Build](https://github.com/BrianLusina/volt-ci/workflows/TestRunner%20Docker%20Image%20Build/badge.svg)
 ![Observer Docker Image Build](https://github.com/BrianLusina/volt-ci/workflows/Observer%20Docker%20Image%20Build/badge.svg)
 ![Dispatcher Docker Image Build](https://github.com/BrianLusina/volt-ci/workflows/Dispatcher%20Docker%20Image%20Build/badge.svg)
+![Reporter Docker Image Build](https://github.com/BrianLusina/volt-ci/workflows/Reporter%20Docker%20Image%20Build/badge.svg)
 ![Github Release](https://github.com/BrianLusina/volt-ci/workflows/Github%20Release/badge.svg)
 
 This is a simplified minimal continuous integration (CI) system that demonstrates how typical CI systems work. The assumption here is that you have git installed on your PATH.
