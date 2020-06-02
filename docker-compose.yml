@@ -33,4 +33,14 @@ services:
     environment:
       REPOSITORY: ${REPOSITORY}
     command: ["python", "run_test_runner.py", "--repo", "$REPOSITORY", "--dispatcher-server", "observer:8000"]
- 
+
+  reporter:
+    build: 
+      context: .
+      dockerfile: Dockerfile.reporter
+    container_name: reporter
+    ports: 
+      - 8555:8555
+    environment:
+      PORT: "8555"
+    command: ["python", "run_reporter_service.py", "--port", "$PORT"]
