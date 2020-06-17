@@ -6,6 +6,7 @@
 ![Dispatcher Docker Image Build](https://github.com/BrianLusina/volt-ci/workflows/Dispatcher%20Docker%20Image%20Build/badge.svg)
 ![Reporter Docker Image Build](https://github.com/BrianLusina/volt-ci/workflows/Reporter%20Docker%20Image%20Build/badge.svg)
 ![Github Release](https://github.com/BrianLusina/volt-ci/workflows/Github%20Release/badge.svg)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FBrianLusina%2Fvolt-ci.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FBrianLusina%2Fvolt-ci?ref=badge_shield)
 
 This is a simplified minimal continuous integration (CI) system that demonstrates how typical CI systems work. The assumption here is that you have git installed on your PATH.
 
@@ -172,3 +173,7 @@ If you kill the dispatcher, the repository observer will figure out it went down
 ## Conclusion
 
 By separating concerns into their own processes, we were able to build the fundamentals of a distributed continuous integration system. With processes communicating with each other via socket requests, we are able to distribute the system across multiple machines, helping to make our system more reliable and scalable.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FBrianLusina%2Fvolt-ci.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FBrianLusina%2Fvolt-ci?ref=badge_large)
